@@ -29,42 +29,17 @@ public class MainActivity extends AppCompatActivity {
         btnLogin = findViewById(R.id.btLogin);
         tvStatus = findViewById(R.id.tvStatus);
 
-        Observable<String> nameObservable = RxTextView.textChanges(edtName).skip(1).map(new Function<CharSequence, String>() {
+        ValidationEditTextUtil.combineLatest(new ValidationEditTextUtil.Consumer2() {
             @Override
-            public String apply(CharSequence charSequence) throws Exception {
-                return charSequence.toString();
-            }
-        });
-        Observable<String> passwordObservable = RxTextView.textChanges(edtPassword).skip(1).map(new Function<CharSequence, String>() {
-            @Override
-            public String apply(CharSequence charSequence) throws Exception {
-                return charSequence.toString();
-            }
-        });
-
-        Observable<Boolean> observable = Observable.combineLatest(nameObservable, passwordObservable, new BiFunction<String, String, Boolean>() {
-            @Override
-            public Boolean apply(String s, String s2) throws Exception {
-                return isValidForm(s, s2);
-            }
-        });
-
-        observable.subscribe(new DisposableObserver<Boolean>() {
-            @Override
-            public void onNext(Boolean aBoolean) {
-                updateButton(aBoolean);
+            public Boolean isValidForm(String... t) throws Exception {
+                return isValidFormMain(t[0], t[1]);
             }
 
             @Override
-            public void onError(Throwable e) {
-
+            public void updateView(boolean valid) {
+                updateButton(valid);
             }
-
-            @Override
-            public void onComplete() {
-
-            }
-        });
+        }, edtName, edtPassword);
     }
 
     public void updateButton(boolean valid) {
@@ -72,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
             btnLogin.setEnabled(true);
     }
 
-    public boolean isValidForm(String name, String password) {
+    public boolean isValidFormMain(String name, String password) {
         boolean validName = !TextUtils.isEmpty(name);
 
         if (!validName) {
@@ -86,5 +61,42 @@ public class MainActivity extends AppCompatActivity {
         return validName && validPass;
     }
 
+
+//        Observable<String> nameObservable = RxTextView.textChanges(edtName).skip(1).map(new Function<CharSequence, String>() {
+//            @Override
+//            public String apply(CharSequence charSequence) throws Exception {
+//                return charSequence.toString();
+//            }
+//        });
+//        Observable<String> passwordObservable = RxTextView.textChanges(edtPassword).skip(1).map(new Function<CharSequence, String>() {
+//            @Override
+//            public String apply(CharSequence charSequence) throws Exception {
+//                return charSequence.toString();
+//            }
+//        });
+//
+//        Observable<Boolean> observable = Observable.combineLatest(nameObservable, passwordObservable, new BiFunction<String, String, Boolean>() {
+//            @Override
+//            public Boolean apply(String s, String s2) throws Exception {
+//                return isValidForm(s, s2);
+//            }
+//        });
+//
+//        observable.subscribe(new DisposableObserver<Boolean>() {
+//            @Override
+//            public void onNext(Boolean aBoolean) {
+//                updateButton(aBoolean);
+//            }
+//
+//            @Override
+//            public void onError(Throwable e) {
+//
+//            }
+//
+//            @Override
+//            public void onComplete() {
+//
+//            }
+//        });
 
 }
