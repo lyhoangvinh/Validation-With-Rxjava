@@ -20,7 +20,7 @@ I am going to build a login application which would take a username and a passwo
 # Libraries
 RxAndroid, RxJava2.
 
-Add two dependencies for RxJava and RxAndroid
+Add three dependencies for RxJava and RxAndroid
 
 ```gradle
   implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
