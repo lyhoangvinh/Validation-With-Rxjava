@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Observable;
+import io.reactivex.annotations.Nullable;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Function3;
@@ -19,33 +20,30 @@ import io.reactivex.observers.DisposableObserver;
 
 public class ValidationEditTextUtil {
 
-    public static void combineLatest(final Consumer2 consumer, EditText... editText) {
-        List<Observable<String>> observables = createObservableTextChanges(editText);
+    public static void combineLatest(final Consumer2 consumer, @Nullable EditText... editText) {
+        if (editText.length > 1) {
+            combineLatest(createObservableTextChanges(editText), new Consumer1() {
+                @Override
+                public Boolean isValidForm(String... t) throws Exception {
+                    return consumer.isValidForm(t);
+                }
+            }).subscribe(new DisposableObserver<Boolean>() {
+                @Override
+                public void onNext(Boolean aBoolean) {
+                    consumer.updateView(aBoolean);
+                }
 
-        Observable<Boolean> observable = combineLatest(observables, new Consumer1() {
-            @Override
-            public Boolean isValidForm(String... t) throws Exception {
-                return consumer.isValidForm(t);
-            }
-        });
+                @Override
+                public void onError(Throwable e) {
 
-        observable.subscribe(new DisposableObserver<Boolean>() {
-            @Override
-            public void onNext(Boolean aBoolean) {
-                consumer.updateView(aBoolean);
-            }
+                }
 
-            @Override
-            public void onError(Throwable e) {
+                @Override
+                public void onComplete() {
 
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-        });
-
+                }
+            });
+        }
     }
 
 
